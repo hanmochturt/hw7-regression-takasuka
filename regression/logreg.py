@@ -85,8 +85,6 @@ class BaseRegressor():
             # Update iteration
             iteration += 1
 
-        print(self.W, "final weights")
-
     def plot_loss_history(self):
 
         # Make sure training has been run
