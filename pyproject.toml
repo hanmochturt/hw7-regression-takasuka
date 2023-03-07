@@ -12,7 +12,7 @@ authors = [{name = "Hannah Takasuka", email = "hannah.takasuka@ucsf.edu"}]
 license = {file = "LICENSE"}
 classifiers = ["License :: OSI Approved :: MIT License"]
 dynamic = ["version", "description"]
-dependencies = ["pytest", "numpy", "scipy", "matplotlib", "scikit-learn"]
+dependencies = ["pytest", "numpy", "scipy", "matplotlib", "scikit-learn", "pandas"]
 
 [project.urls]
 Home = "https://github.com/hanmochturt/hw7-regression-takasuka"
