@@ -1,0 +1,21 @@
+[build-system]
+requires = [
+	"flit_core >=3.8",
+	"python_version >= '3.9'"
+	]
+build-backend = "flit_core.buildapi"
+dynamic=["version"]
+
+[project]
+name = "logreg"
+authors = [{name = "Hannah Takasuka", email = "hannah.takasuka@ucsf.edu"}]
+license = {file = "LICENSE"}
+classifiers = ["License :: OSI Approved :: MIT License"]
+dynamic = ["version", "description"]
+dependencies = ["pytest", "numpy", "scipy", "matplotlib", "scikit-learn"]
+
+[tool.coverage.run]
+source = ["regression"] # parent directory of package
+
+[project.urls]
+Home = "https://github.com/hanmochturt/hw7-regression-takasuka"

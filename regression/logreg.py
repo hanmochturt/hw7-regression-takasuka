@@ -1,5 +1,7 @@
 import numpy as np
+import math
 import matplotlib.pyplot as plt
+
 
 # Base class for generic regressor
 # (this is already complete!)
@@ -20,23 +22,23 @@ class BaseRegressor():
         # Define empty lists to store losses over training
         self.loss_hist_train = []
         self.loss_hist_val = []
-    
+
     def make_prediction(self, X):
         raise NotImplementedError
-    
+
     def loss_function(self, y_true, y_pred):
         raise NotImplementedError
-        
+
     def calculate_gradient(self, y_true, X):
         raise NotImplementedError
-    
+
     def train_model(self, X_train, y_train, X_val, y_val):
 
         # Padding data with vector of ones for bias term
         X_train = np.hstack([X_train, np.ones((X_train.shape[0], 1))])
         X_val = np.hstack([X_val, np.ones((X_val.shape[0], 1))])
-    
-        # Defining intitial values for while loop
+
+        # Defining initial values for while loop
         prev_update_size = 1
         iteration = 1
 
@@ -59,7 +61,6 @@ class BaseRegressor():
 
             # Iterate through batches (one of these loops is one epoch of training)
             for X_train, y_train in zip(X_batch, y_batch):
-
                 # Make prediction and calculate loss
                 y_pred = self.make_prediction(X_train)
                 train_loss = self.loss_function(y_train, y_pred)
@@ -68,7 +69,7 @@ class BaseRegressor():
                 # Update weights
                 prev_W = self.W
                 grad = self.calculate_gradient(y_train, X_train)
-                new_W = prev_W - self.lr * grad 
+                new_W = prev_W - self.lr * grad
                 self.W = new_W
 
                 # Save parameter update size
@@ -83,7 +84,9 @@ class BaseRegressor():
 
             # Update iteration
             iteration += 1
-    
+
+        print(self.W, "final weights")
+
     def plot_loss_history(self):
 
         # Make sure training has been run
@@ -104,7 +107,8 @@ class BaseRegressor():
         self.W = np.random.randn(self.num_feats + 1).flatten()
         self.loss_hist_train = []
         self.loss_hist_val = []
-        
+
+
 # Implement logistic regression as a subclass
 class LogisticRegressor(BaseRegressor):
 
@@ -116,10 +120,10 @@ class LogisticRegressor(BaseRegressor):
             max_iter=max_iter,
             batch_size=batch_size
         )
-    
+
     def make_prediction(self, X) -> np.array:
         """
-        TODO: Implement logistic function to get estimates (y_pred) for input X values. The logistic
+        Implement logistic function to get estimates (y_pred) for input X values. The logistic
         function is a transformation of the linear model into an "S-shaped" curve that can be used
         for binary classification.
 
@@ -129,11 +133,15 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             The predicted labels (y_pred) for given X.
         """
-        pass
-    
+        if X.shape[1] == self.num_feats:
+            X = np.hstack([X, np.ones((X.shape[0], 1))])
+        linear_output = np.dot(X, self.W).flatten()
+        logistic_output = 1 / (1 + np.exp(-linear_output))
+        return logistic_output
+
     def loss_function(self, y_true, y_pred) -> float:
         """
-        TODO: Implement binary cross entropy loss, which assumes that the true labels are either
+        Implement binary cross entropy loss, which assumes that the true labels are either
         0 or 1. (This can be extended to more than two classes, but here we have just two.)
 
         Arguments:
@@ -143,11 +151,14 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             The mean loss (a single number).
         """
-        pass
-        
+        y_pred = np.clip(y_pred, 0.000001, 0.999999)
+        loss_each_x = y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred)
+        average_loss = -np.sum(loss_each_x) / y_true.size
+        return average_loss
+
     def calculate_gradient(self, y_true, X) -> np.ndarray:
         """
-        TODO: Calculate the gradient of the loss function with respect to the given data. This
+        Calculate the gradient of the loss function with respect to the given data. This
         will be used to update the weights during training.
 
         Arguments:
@@ -157,4 +168,8 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             Vector of gradients.
         """
-        pass
+        y_pred = self.make_prediction(X)
+        error = y_true - y_pred
+        grad = -X.T.dot(error) / len(y_true)
+        return grad
+

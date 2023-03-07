@@ -35,9 +35,12 @@ def main():
 
     # For testing purposes, once you've added your code.
     # CAUTION: hyperparameters have not been optimized.
-    # log_model = logreg.LogisticRegressor(num_feats=6, learning_rate=0.00001, tol=0.01, max_iter=10, batch_size=10)
-    # log_model.train_model(X_train, y_train, X_val, y_val)
-    # log_model.plot_loss_history()
+    log_model = logreg.LogisticRegressor(num_feats=X_train.shape[1], learning_rate=0.01,
+                                         tol=0.0001,
+                                         max_iter=10000, batch_size=1000)
+    log_model.train_model(X_train, y_train, X_val, y_val)
+    log_model.plot_loss_history()
+
 
 # Run main function if run as script
 if __name__ == "__main__":
